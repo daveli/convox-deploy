@@ -48,24 +48,3 @@ Add the CONVOX_HOST and CONVOX_PASSWORD params into a shell step, something like
     export CONVOX_PASSWORD=blah
     export APP_NAME=your-app
     ./convox_deploy.sh
-
-## Customizing
-
-If you need to customize your deploy, modify the convox_deploy.sh for your project as needed with any before/after hooks.
-
-## Notes
-
-If we find that this deploy script is used verbatim without modifications, we may abstract it into a common utility n Jenkins.
-
-## How does this actually work?
-
-1. Convox will send your docker build to one of the hosts in the cluster
-2. The cluster's docker daemon will build the container
-3. Convox will submit a cloudformation template to deploy it to ECS
-4. ECS automatically rotates in the new containers by bringing up extra ones and taking the old ones away.
-
-Keep in mind that during the deploy you will have two versions of your app running.
-
-## Example Apps
-
-  * App: https://github.com/reverbdotcom/gtin-matcher
