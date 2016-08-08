@@ -1,15 +1,20 @@
-# convox-deploy
+## Why this exists: On-Cluster vs Off-Cluster deploys
 
-With convox/ECS the only thing that really matters is your Dockerfile and docker-compose.
+By default a "convox deploy" command will send your docker build to the cluster in order to service it there. This has a number of disadvantages:
 
-This repo contains the canonical/universal convox deploy script. It is designed with hooks so that
-apps will not have to modify the script itself.
+1. It taxes the cluster (which is running possibly production containers) with a docker build
+2. Depending on the number of nodes in the cluster and their ephemeral nature you may hit a stale cache and do a full from-scratch build
+
+To solve this, we prefer building off-cluster, meaning building on your local machine (or jenkins). To do this with convox requires a minor hack in that we have to supply the repository name and tag in docker-compose.yml and then replace the artificial `TAG` with the actual docker tag during the build.
+
+We have also provided a number of lifecycle hooks for interesting things that people may want to run before/after the build, or prior to promoting the release, so that it's easy to adapt to common patterns such as running database migrations in the new container prior to release.
+
 
 ## Getting Started
 
 1. Copy convox_deploy.sh to the root of your repo.
-2. Provide a Dockerfile and a docker-compose.yml. To test that these work as expected, use `convox start` to load up your app. Example files have been provided in this repo in `/examples`. Also provide a `.dockerignore` to make sure you ignore `.git` and any other temporary dirs that should not be deployed.
-3. Make sure that your docker-compose.yml points to an ECR repo and has the special "TAG" value in the `image` directive. See the example.
+2. Provide a Dockerfile and a docker-compose.yml. To test that these work as expected, use `convox start` to load up your app. Example files have been provided in this repo in `/example`. Also provide a `.dockerignore` to make sure you ignore `.git` and any other temporary dirs that should not be deployed.
+3. Make sure that your docker-compose.yml points to an ECR repo and has the special `TAG` value in the `image` directive. See the example.
 
 If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml` (convention, unrelated to this deploy script)
 
@@ -22,14 +27,6 @@ If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml`
 5. If your app needs to do anything special such as running migrations prior to making the release live, provide a `deploy/before_release.sh` (make sure to `chmod +x` it). This file can access the variables `$APP_NAME` and `$RELEASE_ID`. We've provided an example.
 6. After your app's hooks complete, we tell convox to promote the release, which triggers an ECS promotion. This may last a few minutes depending on the number of containers and free capacity on the cluster.0
 
-## On-Cluster vs Off-Cluster deploys
-
-By default a "convox deploy" command will send your docker build to the cluster in order to service it there. This has a number of disadvantages:
-1. It taxes the cluster (which is running possibly production containers) with a docker build
-2. Depending on the # of nodes in the cluster and their ephemeral nature you may hit a stale cache and do a full from-scratch build
-
-To solve this, we prefer building off-cluster, meaning building on your local machine (or jenkins). To do this with convox requires a minor hack in that
-we have to supply the repository name and tag in docker-compose.yml
 
 ## Testing your deploy locally
 
