@@ -1,0 +1,12 @@
+web:
+  # Note: "TAG" is special here. It will be replaced by the latest tag during deploy
+  # You do not have to pre-create this repo, the deploy script will do it for you
+  #
+  # Just make sure you're consistent with the app name here as what you pass as
+  # APP_NAME to convox_deploy.sh
+  image: 1234512345.dkr.ecr.us-east-1.amazonaws.com/your-app-name:TAG
+  command: rackup -o 0.0.0.0
+  environment:
+    - RACK_ENV=production
+  ports:
+    - 80:9292
