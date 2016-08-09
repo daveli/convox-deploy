@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
-if [[ -z "$APP_NAME" || -z "$CONVOX_HOST" || -z "$CONVOX_PASSWORD" ]]; then
-  echo "Usage: APP_NAME=your-app CONVOX_HOST=[url] CONVOX_PASSWORD=[password] ./convox_deploy.sh"
+if [[ -z "$APP_NAME" || -z "$CONVOX_HOST" ]]; then
+  echo "Usage: APP_NAME=your-app CONVOX_HOST=[url] ./convox_deploy.sh"
   echo "optional: DOCKER_COMPOSE=docker-compose.foo.yml"
   exit 1
+fi
+
+# Grab the convox password from the file, this assumes we've logged in before
+if [[ -e $HOME/.convox/auth ]]
+then
+  CONVOX_PASSWORD=$(cat ~/.convox/auth | jq --arg host $HOST -r '.[$host]')
 fi
 
 # If you need to do anything special before the build, provide this file in your
