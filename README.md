@@ -14,7 +14,7 @@ We have also provided a number of lifecycle hooks for interesting things that pe
 
 1. Copy convox_deploy.sh to the root of your repo.
 2. Provide a Dockerfile and a docker-compose.yml. To test that these work as expected, use `convox start` to load up your app. Example files have been provided in this repo in `/example`. Also provide a `.dockerignore` to make sure you ignore `.git` and any other temporary dirs that should not be deployed.
-3. Make sure that your docker-compose.yml points to an ECR repo and has the special `TAG` value in the `image` directive. See the example.
+3. Make sure that your docker-compose.yml points to an ECR repo in its `image` directive. See the example.
 
 If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml` (convention, unrelated to this deploy script)
 

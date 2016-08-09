@@ -43,7 +43,7 @@ docker push $ECR:$IMAGE_ID
 TEMPFILE=.docker-compose.yml
 echo "Writing new docker tag to $TEMPFILE..."
 
-sed "s/TAG/$IMAGE_ID/" ${DOCKER_COMPOSE:-docker-compose.yml} > $TEMPFILE
+sed "s/\(.*image:.*\)/\1:$IMAGE_ID/" ${DOCKER_COMPOSE:-docker-compose.yml} > $TEMPFILE
 
 GIT_DESCRIPTION=$(git log --oneline | head -1)
 
