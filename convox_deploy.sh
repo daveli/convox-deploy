@@ -8,7 +8,7 @@ fi
 # Grab the convox password from the file, this assumes we've logged in before
 if [[ -e $HOME/.convox/auth ]]
 then
-  CONVOX_PASSWORD=$(cat ~/.convox/auth | jq --arg host $HOST -r '.[$host]')
+  CONVOX_PASSWORD=$(cat ~/.convox/auth | jq --arg host $CONVOX_HOST -r '.[$host]')
 fi
 
 # If you need to do anything special before the build, provide this file in your
@@ -21,7 +21,13 @@ fi
 export ECR=$(cat docker-compose.yml | grep image | cut -d":" -f2 | tr -d '[[:space:]]')
 export ECR_NAME=$(echo $ECR | cut -d"/" -f2)
 
-echo "Working with ECR $ECR and NAME $ECR_NAME"
+if [[ -z $ECR_NAME || -z $ECR ]]
+then
+  echo "Please make sure you have an image declaration in your docker-compose.yml pointing to an ECR repo"
+  exit 1
+fi
+
+echo "ECR Repo: $ECR"
 
 $(aws ecr get-login)
 
@@ -30,11 +36,23 @@ aws ecr create-repository --repository-name $ECR_NAME 2>/dev/null
 
 # Build the image and grab the image id. The image id is a unique tag identifying the contents
 # We can use this tag to then tag the image to force a new push to the ECR repo
+
+# If this is a git repo, use the git-sha for tagging. Otherwise, use the docker image id
 IMAGE_ID=$(docker build -t $APP_NAME . | awk '/Successfully built/{print $NF}')
-DOCKER_TAG="$APP_NAME:$IMAGE_ID"
+
+if [[ -e ".git" ]]
+then
+  RELEASE_ID=$(git rev-parse HEAD)
+else
+  RELEASE_ID=$IMAGE_ID
+fi
 
 # Tag the image with the image id
-docker tag $DOCKER_TAG $ECR:$IMAGE_ID
+DOCKER_TAG=$APP_NAME:$IMAGE_ID
+
+docker tag $DOCKER_TAG $APP_NAME:$RELEASE_ID
+docker tag $DOCKER_TAG $ECR:$RELEASE_ID
+docker tag $DOCKER_TAG $ECR:latest
 
 if [[ -e deploy/after_build.sh ]]
 then
@@ -42,14 +60,17 @@ then
 fi
 
 # Push the latest build
-docker push $ECR:$IMAGE_ID
+docker push $ECR:$RELEASE_ID
+
+# Also tag it with the 'latest' tag
+docker push $ECR:latest
 
 # Edit the tag in the docker-compose
 # Note: convox doesn't like the file living outside the current path
 TEMPFILE=.docker-compose.yml
 echo "Writing new docker tag to $TEMPFILE..."
 
-sed "s/\(.*image:.*\)/\1:$IMAGE_ID/" ${DOCKER_COMPOSE:-docker-compose.yml} > $TEMPFILE
+sed "s/\(.*image:.*\)/\1:$RELEASE_ID/" ${DOCKER_COMPOSE:-docker-compose.yml} > $TEMPFILE
 
 GIT_DESCRIPTION=$(git log --oneline | head -1)
 
@@ -73,3 +94,4 @@ convox releases promote --app $APP_NAME --wait $RELEASE_ID
 
 # Cleanup
 rm $TEMPFILE
+
