@@ -8,7 +8,7 @@ fi
 # Grab the convox password from the file, this assumes we've logged in before
 if [[ -e $HOME/.convox/auth ]]
 then
-  CONVOX_PASSWORD=$(cat ~/.convox/auth | jq --arg host $HOST -r '.[$host]')
+  CONVOX_PASSWORD=$(cat ~/.convox/auth | jq --arg host $CONVOX_HOST -r '.[$host]')
 fi
 
 # If you need to do anything special before the build, provide this file in your
