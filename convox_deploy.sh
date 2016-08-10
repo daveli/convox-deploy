@@ -78,7 +78,7 @@ sed "s/\(.*image:.*\)/\1:$RELEASE_ID/" ${DOCKER_COMPOSE:-docker-compose.yml} > $
 GIT_DESCRIPTION=$(git log --oneline | head -1)
 
 echo "Building $APP_NAME release..."
-convox build --file $TEMPFILE --incremental --app $APP_NAME --description "$GIT_DESCRIPTION"
+convox build --file $TEMPFILE --app $APP_NAME --description "$GIT_DESCRIPTION"
 
 echo "Grabbing last release from API..."
 # These exports are needed so that the api command below has access to them
