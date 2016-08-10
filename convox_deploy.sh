@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 if [[ -z "$APP_NAME" || -z "$CONVOX_HOST" ]]; then
   echo "Usage: APP_NAME=your-app CONVOX_HOST=[url] ./convox_deploy.sh"
   echo "optional: DOCKER_COMPOSE=docker-compose.foo.yml"
@@ -32,7 +33,9 @@ echo "ECR Repo: $ECR"
 $(aws ecr get-login)
 
 # This will only need to happen the first time. The 2>/dev/null ignores errors
+set +e
 aws ecr create-repository --repository-name $ECR_NAME 2>/dev/null
+set -e
 
 # Build the image and grab the image id. The image id is a unique tag identifying the contents
 # We can use this tag to then tag the image to force a new push to the ECR repo
