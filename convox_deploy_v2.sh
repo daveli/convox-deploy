@@ -151,7 +151,6 @@ echo_with_feedback() {
 
 main() {
     check_arg_requirements
-    check_git_repo_requirements
 
     replace_tag_with_git_hash
 
@@ -190,7 +189,7 @@ main() {
         "Running before_release script..."
 
     echo_with_feedback \
-        promote_release
+        promote_release \
         "Promoting $RELEASE_ID to $CONVOX_HOST..."
 
     echo "${BOLD}✅  Deployment complete!${NORMAL}"
