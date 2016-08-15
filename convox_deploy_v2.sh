@@ -24,9 +24,8 @@ check_arg_requirements() {
         echo "Please set CONVOX_HOST to the full hostname of your rack"
         exit 1
     fi
-    
-    if [[ -e $HOME/.convox/auth ]]
-    then
+
+    if [[ -e $HOME/.convox/auth ]]; then
       CONVOX_PASSWORD=$(cat ~/.convox/auth | jq --arg host $CONVOX_HOST -r '.[$host]')
     fi
 
@@ -46,7 +45,7 @@ check_git_repo_requirements() {
 }
 
 replace_tag_with_git_hash() {
-    sed "s/$TAG/$GIT_HASH/" $DOCKER_COMPOSE > $TEMPFILE
+  sed "s/\(.*image:.*\)/\1.$GIT_HASH/" $DOCKER_COMPOSE > $TEMPFILE
 }
 
 run_before_build_script() {
