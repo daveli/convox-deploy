@@ -16,7 +16,7 @@ We have also provided a number of lifecycle hooks for interesting things that pe
 2. Make sure that your docker-compose.yml points to an ECR repo in its `image` directive. See the example.
 3. Invoke the script, passing in your `APP_NAME` and `CONVOX_HOST` - if you have a ~/.convox/auth file, we will automatically read the password from there. If not, pass in `CONVOX_PASSWORD` as an env var as well.
 
-     APP_NAME=auctioneer-unstable bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
+      APP_NAME=auctioneer-unstable bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
 
 
 If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml` (convention, unrelated to this deploy script)
