@@ -90,7 +90,7 @@ log_into_aws_ecr()  {
 }
 
 build_docker_images() {
-    docker-compose -f $TEMPFILE build 2>/dev/null
+    docker-compose -f $TEMPFILE build
 }
 
 push_images_to_docker() {
