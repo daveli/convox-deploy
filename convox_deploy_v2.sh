@@ -19,7 +19,18 @@ export RACK_NAME=${RACK_NAME:-$(convox switch)}
 export APP_NAME=${APP_NAME:-${PWD##*/}}
 
 check_arg_requirements() {
-    if [[ -z "$APP_NAME" || -z "$CONVOX_HOST" || -z "$CONVOX_PASSWORD" || -z "$RACK_NAME" ]]; then
+    # Grab the convox password from the file, this assumes we've logged in before
+    if [[ -z "$CONVOX_HOST" ]]; then
+        echo "Please set CONVOX_HOST to the full hostname of your rack"
+        exit 1
+    fi
+    
+    if [[ -e $HOME/.convox/auth ]]
+    then
+      CONVOX_PASSWORD=$(cat ~/.convox/auth | jq --arg host $CONVOX_HOST -r '.[$host]')
+    fi
+
+    if [[ -z "$APP_NAME" || -z "$CONVOX_PASSWORD" || -z "$RACK_NAME" ]]; then
         echo "Usage: APP_NAME=your-app CONVOX_HOST=[url] CONVOX_PASSWORD=[password] ./convox_deploy.sh"
         echo "optional: DOCKER_COMPOSE=docker-compose.foo.yml"
         exit 1
