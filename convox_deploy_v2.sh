@@ -161,13 +161,13 @@ echo_with_feedback() {
 
 # Sets an env variable in the convox build so it's easy to identify what build is running
 # Can be used by in-app health checks
-set_revision_env() {
+#set_revision_env() {
   # This is currently disabled because it creates a release based on the current running release,
   # whereas we want to set this on the new release prior to releasing it
   # see: https://github.com/convox/rack/issues/962
 
   # convox env set REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME
-}
+#}
 
 main() {
     check_arg_requirements
