@@ -15,7 +15,6 @@ declare NORMAL=$(tput sgr0)
 export GIT_HASH=$(git rev-parse HEAD)
 export GIT_DESCRIPTION=$(git log --oneline | head -1)
 export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-export RACK_NAME=${RACK_NAME:-$(convox switch)}
 export APP_NAME=${APP_NAME:-${PWD##*/}}
 
 check_arg_requirements() {
@@ -30,7 +29,7 @@ check_arg_requirements() {
     fi
 
     if [[ -z "$APP_NAME" || -z "$CONVOX_PASSWORD" || -z "$RACK_NAME" ]]; then
-        echo "Usage: APP_NAME=your-app CONVOX_HOST=[url] CONVOX_PASSWORD=[password] ./convox_deploy.sh"
+        echo "Usage: RACK_NAME=rack-name APP_NAME=your-app CONVOX_HOST=[full-rack.url.com] CONVOX_PASSWORD=[password] ./convox_deploy.sh"
         echo "optional: DOCKER_COMPOSE=docker-compose.foo.yml"
         exit 1
     fi
