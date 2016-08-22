@@ -160,13 +160,17 @@ echo_with_feedback() {
 }
 
 set_revision_env() {
-   convox env set REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME --promote
+   convox env set REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME
 }
 
 main() {
     check_arg_requirements
 
     replace_tag_with_git_hash
+
+    echo_with_feedback \
+        set_revision_env \
+        "Setting REVISION=$GIT_HASH"
 
     echo_with_feedback \
         run_before_build_script \
@@ -205,10 +209,6 @@ main() {
     echo_with_feedback \
         promote_release \
         "Promoting $RELEASE_ID to $CONVOX_HOST..."
-
-    echo_with_feedback \
-        set_revision_env \
-        "Setting REVISION=$GIT_HASH"
 
     echo "${BOLD}✅  Deployment complete!${NORMAL}"
 }
