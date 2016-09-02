@@ -27,7 +27,7 @@ We have also provided a number of lifecycle hooks for interesting things that pe
 
 **V2**
 
-        APP_NAME=auctioneer-unstable CONVOX_PASSWORD=... RACK_NAME=... CONVOX_HOST=... -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
+        APP_NAME=auctioneer-unstable CONVOX_PASSWORD=... RACK_NAME=... CONVOX_HOST=... bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
 
 If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml` (convention, unrelated to this deploy script)
 
