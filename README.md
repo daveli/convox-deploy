@@ -1,7 +1,7 @@
 ## v1 vs v2
 
-* convox_deploy.sh is stable and working, but it only supports docker-compose.yml with a single image.
-* convox_deploy_v2.sh is contributed by @liam on #convox and supports multiple images. We're working on cleaning it up.
+* convox_deploy.sh is stable and working, but it only supports docker-compose.yml with a single image. Use the `examples/v1/docker-compose.yml`
+* convox_deploy_v2.sh is contributed by @liam on #convox and supports multiple images. Use the `examples/v2/docker-compose.yml`
 
 ## Why this exists: On-Cluster vs Off-Cluster deploys
 
@@ -18,11 +18,16 @@ We have also provided a number of lifecycle hooks for interesting things that pe
 ## Getting Started
 
 1. Provide a Dockerfile and a docker-compose.yml. To test that these work as expected, use `convox start` to load up your app. Example files have been provided in this repo in `/example`. Also provide a `.dockerignore` to make sure you ignore `.git` and any other temporary dirs that should not be deployed.
-2. Make sure that your docker-compose.yml points to an ECR repo in its `image` directive. See the example.
+2. Make sure that your docker-compose.yml points to an ECR repo in its `image` directive. See the `examples` dir.
 3. Invoke the script, passing in your `APP_NAME` and `CONVOX_HOST` - if you have a ~/.convox/auth file, we will automatically read the password from there. If not, pass in `CONVOX_PASSWORD` as an env var as well.
+
+**V1**
 
         APP_NAME=auctioneer-unstable bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
 
+**V2**
+
+        APP_NAME=auctioneer-unstable CONVOX_PASSWORD=... RACK_NAME=... CONVOX_HOST=... -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
 
 If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml` (convention, unrelated to this deploy script)
 
