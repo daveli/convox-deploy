@@ -1,6 +1,6 @@
 web:
   # This points to an ECR repo on AWS. The repo will be created automatically.
-  image: 1234512345.dkr.ecr.us-east-1.amazonaws.com/your-app-name
+  image: 12345YourEcrRepo.dkr.ecr.us-east-1.amazonaws.com/your-app-name
   build:
     context: .
   command: rackup -o 0.0.0.0
