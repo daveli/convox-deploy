@@ -1,6 +1,16 @@
 web:
   # This points to an ECR repo on AWS. The repo will be created automatically.
-  image: 12345YourEcrRepo.dkr.ecr.us-east-1.amazonaws.com/your-app-name
+  image: 12345YourEcrRepo.dkr.ecr.us-east-1.amazonaws.com/your-app-name:web
+  build:
+    context: .
+  command: rackup -o 0.0.0.0
+  environment:
+    - RACK_ENV=production
+  ports:
+    - 80:9292
+foobar:
+  # This points to an ECR repo on AWS. The repo will be created automatically.
+  image: 12345YourEcrRepo.dkr.ecr.us-east-1.amazonaws.com/your-app-name:foobar
   build:
     context: .
   command: rackup -o 0.0.0.0
