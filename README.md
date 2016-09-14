@@ -29,9 +29,9 @@ This is deprecated - it only supports single-container deploys.
 
 **V2**
 
-        APP_NAME=auctioneer-unstable CONVOX_PASSWORD=... RACK_NAME=... CONVOX_HOST=... bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
+        APP_NAME=my-app CONVOX_PASSWORD=mypass RACK_NAME=rack-short-name CONVOX_HOST=full-rack-url.whatever.com bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy_v2.sh)"
 
-If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml` (convention, unrelated to this deploy script)
+If your app needs a dev-specific docker-compose, create `docker-compose.dev.yml` (convention, unrelated to this deploy script). You can ommit the `CONVOX_PASSWORD` if you have `~/.convox/auth` as we will read from there.
 
 ## Build lifecycle
 
