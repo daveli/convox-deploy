@@ -106,6 +106,9 @@ push_images_to_docker() {
         aws ecr create-repository --repository-name $ECR_NAME 2>/dev/null || true
 
         # Push the latest build
+        echo "docker tag $ECR:$SERVICE_NAME.$GIT_HASH $ECR:$SERVICE_NAME.latest"
+        docker tag $ECR:$SERVICE_NAME.$GIT_HASH $ECR:$SERVICE_NAME.latest
+
         echo "Running docker push $ECR:$SERVICE_NAME.$GIT_HASH"
         docker push $ECR:$SERVICE_NAME.$GIT_HASH
 
