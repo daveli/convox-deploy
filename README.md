@@ -7,6 +7,11 @@ https://convox.com/docs/getting-started/
 * convox_deploy.sh is stable and working, but it only supports docker-compose.yml with a single image. Use the `examples/v1/docker-compose.yml`
 * convox_deploy_v2.sh is contributed by @liam on #convox and supports multiple images. Use the `examples/v2/docker-compose.yml`
 
+
+## Migrating v1 to v2
+
+[Learn how to migrate](MIGRATE_V1_V2.md)
+
 ## Why this exists: On-Cluster vs Off-Cluster deploys
 
 By default a "convox deploy" command will send your docker build to the cluster in order to service it there. This has a number of disadvantages:

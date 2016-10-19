@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -e
+
+
+echo "This deploy script is deprecated. Please migrate to convox_deploy_v2.sh; See: https://github.com/reverbdotcom/convox-deploy/blob/master/MIGRATE_V1_V2.md"
+
 if [[ -z "$APP_NAME" || -z "$CONVOX_HOST" ]]; then
   echo "Usage: APP_NAME=your-app CONVOX_HOST=[url] ./convox_deploy.sh"
   echo "optional: DOCKER_COMPOSE=docker-compose.foo.yml"
