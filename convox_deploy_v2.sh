@@ -85,7 +85,7 @@ run_before_release_script() {
 }
 
 log_into_aws_ecr()  {
-    if [[ -z "$ECR_AUTH" ]];
+    if [[ -z "$SKIP_ECR_AUTH" ]];
     then
       echo "Skipping ECR login..."
     else
