@@ -85,7 +85,12 @@ run_before_release_script() {
 }
 
 log_into_aws_ecr()  {
-    $(aws ecr get-login)
+    if [[ -z "$SKIP_ECR_AUTH" ]];
+    then
+      echo "Skipping ECR login..."
+    else
+      $(aws ecr get-login)
+    fi
 }
 
 build_docker_images() {
