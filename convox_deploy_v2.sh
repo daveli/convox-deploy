@@ -125,7 +125,8 @@ strip_build_options() {
 }
 
 build_convox_release() {
-    convox build --file $TEMPFILE --incremental --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
+    convox build --file $TEMPFILE --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
+    #convox build --file $TEMPFILE --incremental --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
 }
 
 get_latest_release_id() {
