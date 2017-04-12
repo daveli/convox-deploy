@@ -34,7 +34,7 @@ We have also provided a number of lifecycle hooks for interesting things that pe
 
 This is deprecated - it only supports single-container deploys.
 
-        APP_NAME=auctioneer-unstable bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
+        APP_NAME=my-app bash -c "$(curl -sL https://raw.githubusercontent.com/reverbdotcom/convox-deploy/master/convox_deploy.sh)"
 
 **V2**
 
