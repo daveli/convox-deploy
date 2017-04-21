@@ -117,6 +117,9 @@ push_images_to_docker() {
         echo "Running docker push $ECR:$SERVICE_NAME.$GIT_HASH"
         docker push $ECR:$SERVICE_NAME.$GIT_HASH
 
+        echo "Pushing latest tag"
+        docker push $ECR:$SERVICE_NAME.latest
+
     done <<< "$ECR_LIST"
 }
 
