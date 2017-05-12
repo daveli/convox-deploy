@@ -124,7 +124,8 @@ push_images_to_docker() {
 }
 
 strip_build_options() {
-    sed -i.bak '/build:/d; /context:/d; /dockerfile:/d' $TEMPFILE
+    # remove the build part of the docker compose file, using ruby so we can parse the yaml and remove arbitrary keys from that section
+    ruby -e 'require "yaml"; yaml = YAML.load_file(ENV["TEMPFILE"]); yaml["services"].each { |_, service| service.delete("build") }; File.open(ENV["TEMPFILE"], "w") {|f| f.write yaml.to_yaml }'
 }
 
 build_convox_release() {
