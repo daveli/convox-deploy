@@ -8,10 +8,10 @@ set -e
 
 declare TAG='<TAG>'
 declare DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker-compose.yml}
-declare TEMPFILE=.$DOCKER_COMPOSE
 declare BOLD=$(tput bold)
 declare NORMAL=$(tput sgr0)
 
+export TEMPFILE=.$DOCKER_COMPOSE
 export GIT_HASH=$(git rev-parse HEAD)
 export GIT_DESCRIPTION=$(git log --oneline | head -1)
 export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
