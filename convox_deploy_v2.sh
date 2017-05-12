@@ -8,10 +8,10 @@ set -e
 
 declare TAG='<TAG>'
 declare DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker-compose.yml}
-declare TEMPFILE=.$DOCKER_COMPOSE
 declare BOLD=$(tput bold)
 declare NORMAL=$(tput sgr0)
 
+export TEMPFILE=.$DOCKER_COMPOSE
 export GIT_HASH=$(git rev-parse HEAD)
 export GIT_DESCRIPTION=$(git log --oneline | head -1)
 export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -124,7 +124,8 @@ push_images_to_docker() {
 }
 
 strip_build_options() {
-    sed -i.bak '/build:/d; /context:/d; /dockerfile:/d' $TEMPFILE
+    # remove the build part of the docker compose file, using ruby so we can parse the yaml and remove arbitrary keys from that section
+    ruby -e 'require "yaml"; yaml = YAML.load_file(ENV["TEMPFILE"]); yaml["services"].each { |_, service| service.delete("build") }; File.open(ENV["TEMPFILE"], "w") {|f| f.write yaml.to_yaml }'
 }
 
 build_convox_release() {
