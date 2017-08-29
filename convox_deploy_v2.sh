@@ -16,6 +16,7 @@ export GIT_HASH=$(git rev-parse HEAD)
 export GIT_DESCRIPTION=$(git log --oneline | head -1)
 export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 export APP_NAME=${APP_NAME:-${PWD##*/}}
+export AWS_DEFAULT_REGION=us-east-1
 
 check_arg_requirements() {
     # Grab the convox password from the file, this assumes we've logged in before
