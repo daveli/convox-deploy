@@ -45,6 +45,8 @@ check_git_repo_requirements() {
 }
 
 replace_tag_with_git_hash() {
+  grep -q "image:" $DOCKER_COMPOSE || (echo "ERROR: Missing 'image:' directive in docker-compos.yml; It should look like 'image: 12345.dkr.ecr.us-east-1.amazonaws.com/app-name:container-name'" && exit 1)
+
   sed "s/\(.*image:.*\)/\1.$GIT_HASH/" $DOCKER_COMPOSE > $TEMPFILE
 }
 
