@@ -1,0 +1,82 @@
+// vim: set syntax=groovy:
+
+timestamps {
+  ansiColor("xterm") {
+    node("ops") {
+      def dockerImage = "590710864528.dkr.ecr.us-east-1.amazonaws.com/ci/convox-runner:latest"
+      def secretFile = "secret_${BUILD_TAG}"
+
+      //need this to checkout source code on the agent
+      checkout scm
+
+      stage(name: "Pre Stage") {
+        msg = "Deploy app:${env.CONVOX_APP} rack:${env.CONVOX_RACK} started"
+        slackNotify(msg)
+      }
+
+      stage(name: "pull the convox runner image") {
+        sh("\$(aws ecr get-login --region us-east-1 --no-include-email)")
+        sh("docker pull ${dockerImage}")
+      }
+
+      def containerId = null
+
+      stage(name: "writing credentials for convox") {
+        withCredentials([
+          [$class: 'UsernamePasswordMultiBinding', credentialsId: "convox-production-rack", usernameVariable: 'CONVOX_HOST', passwordVariable: 'CONVOX_PASSWORD']
+        ]) {
+          sh("jq -n --arg 'v' ${CONVOX_HOST} --arg 'p' ${CONVOX_PASSWORD} '{(\$v):(\$p)}' > /tmp/${secretFile}.auth")
+          sh("echo ${CONVOX_HOST} > /tmp/${secretFile}.host")
+        }
+      }
+
+      stage(name: "start container runner for convox") {
+        def runCmd = """
+          docker run -td \
+          -e CONVOX_APP=${CONVOX_APP} \
+          -e CONVOX_RACK=${CONVOX_HOST} \
+          -e GIT_COMMIT=${GIT_COMMIT} \
+          -v /tmp/${secretFile}.auth:/home/convox/.convox/auth:ro \
+          -v /tmp/${secretFile}.host:/home/convox/.convox/host:ro \
+          -v ${WORKSPACE}:/var/jenkins_home ${dockerImage} tail
+        """
+        containerId = sh(script:runCmd,  returnStdout: true).trim()
+        println("${containerId} started")
+      }
+
+
+      stage(name: "deploying") {
+        try {
+          def cmd = "./convox_deploy.sh"
+          def dockerCmd = """
+            docker exec -u convox -i ${containerId} bash -c "cd /var/jenkins_home && ${cmd}"
+          """
+          sh(dockerCmd)
+
+        } catch(exc) {
+          println exc
+          throw exc
+        }
+      }
+
+      stage(name: "cleanup") {
+        containerIds = sh(script:"docker ps -qa --filter='ancestor=${dockerImage}'", returnStdout: true)
+        for (i in containerIds.tokenize()) {
+          sh("docker stop -t 0 ${i}")
+          sh("docker rm ${i}")
+        }
+        sh("rm /tmp/${secretFile}.*")
+      }
+
+
+      stage(name: "Post Stage") {
+        msg = "Deploy app:${env.CONVOX_APP} rack:${env.CONVOX_RACK} finished"
+        slackNotify(msg)
+      }
+    }
+  }
+}
+
+def slackNotify(msg) {
+  slackSend channel: "@jerny", color: '#FF0000', message: msg
+}
