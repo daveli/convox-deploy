@@ -175,7 +175,8 @@ echo_with_feedback() {
 }
 
 set_revision_env() {
-   convox env set REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME
+   echo "Setting REVISION=$GIT_HASH"
+   convox env set --id REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME
 }
 
 main() {
@@ -183,9 +184,7 @@ main() {
 
     replace_tag_with_git_hash
 
-    echo_with_feedback \
-        set_revision_env \
-        "Setting REVISION=$GIT_HASH"
+    set_revision_env
 
     echo_with_feedback \
         run_before_build_script \
