@@ -179,7 +179,7 @@ echo_with_feedback() {
 
 set_revision_env() {
    echo "Setting REVISION=$GIT_HASH"
-   convox env set --id REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME
+   convox env set REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME --id
 }
 
 main() {
