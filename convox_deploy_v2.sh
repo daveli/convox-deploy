@@ -62,6 +62,7 @@ run_before_build_script() {
         GIT_BRANCH=$GIT_BRANCH \
         RACK_NAME=$RACK_NAME \
         APP_NAME=$APP_NAME \
+        APP_ENV=$APP_ENV \
         deploy/before_build.sh
     fi
 }
@@ -74,6 +75,7 @@ run_after_build_script() {
         GIT_BRANCH=$GIT_BRANCH \
         RACK_NAME=$RACK_NAME \
         APP_NAME=$APP_NAME \
+        APP_ENV=$APP_ENV \
         deploy/after_build.sh
     fi
 }
@@ -87,6 +89,7 @@ run_before_release_script() {
         RACK_NAME=$RACK_NAME \
         APP_NAME=$APP_NAME \
         RELEASE_ID=$RELEASE_ID \
+        APP_ENV=$APP_ENV \
         deploy/before_release.sh
     fi
 }
