@@ -34,6 +34,10 @@ check_arg_requirements() {
         echo "optional: DOCKER_COMPOSE=docker-compose.foo.yml"
         exit 1
     fi
+
+  #hack to get convox to pick up env vars
+  export CONVOX_HOST
+  export CONVOX_PASSWORD
 }
 
 check_git_repo_requirements() {
@@ -136,9 +140,8 @@ build_convox_release() {
     #convox build --file $TEMPFILE --incremental --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
 }
 
+
 get_latest_release_id() {
-    export CONVOX_HOST
-    export CONVOX_PASSWORD
     export RELEASE_ID=$(convox api get /apps/$APP_NAME/releases | jq -r 'sort_by(.created) | reverse[0] | .id')
 }
 
