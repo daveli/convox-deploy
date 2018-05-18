@@ -185,7 +185,35 @@ set_revision_env() {
    convox env set REVISION=$GIT_HASH --app $APP_NAME --rack $RACK_NAME --id
 }
 
+script_warning() {
+  echo "${BOLD}"
+  echo "WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING"
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo "You are probably manually running this in your repo right now.  We would like to"
+  echo "to sunset this script.  Please consider creating a Convox Job in Jenkins to deploy service"
+  echo "via Verbo.  Here is a link on how to do it: https://doc.reverb.com/convox/#jenkins"
+  echo ""
+  echo ""
+  echo "Also if there is a particular reason you need to keep the script around run locally please let #team-infra know."
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo ""
+  echo "WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING"
+  echo "${NORMAL}"
+}
+
+
 main() {
+    script_warning
+
     check_arg_requirements
 
     replace_tag_with_git_hash
