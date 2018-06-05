@@ -16,7 +16,14 @@ export GIT_HASH=$(git rev-parse HEAD)
 export GIT_DESCRIPTION=$(git log --oneline | head -1)
 export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 export APP_NAME=${APP_NAME:-${PWD##*/}}
-export AWS_DEFAULT_REGION=us-east-1
+
+if [ -z "$AWS_DEFAULT_REGION" ]; then
+    export AWS_DEFAULT_REGION=us-east-1
+fi
+
+if [ -z "$APP_GEN" ]; then
+    export APP_GEN=2
+fi
 
 check_arg_requirements() {
     # Grab the convox password from the file, this assumes we've logged in before
@@ -133,16 +140,37 @@ push_images_to_docker() {
     done <<< "$ECR_LIST"
 }
 
-strip_build_options() {
-    # remove the build part of the docker compose file, using ruby so we can parse the yaml and remove arbitrary keys from that section
-    ruby -e 'require "yaml"; yaml = YAML.load_file(ENV["TEMPFILE"]); yaml["services"].each { |_, service| service.delete("build") }; File.open(ENV["TEMPFILE"], "w") {|f| f.write yaml.to_yaml }'
+parse_build_options() {
+    if [ "$APP_GEN" == 1 ]; then
+        # remove the build part of the docker compose file, using ruby so we can parse the yaml and remove arbitrary keys from that section
+        ruby -e 'require "yaml"; yaml = YAML.load_file(ENV["TEMPFILE"]); yaml["services"].each { |_, service| service.delete("build") }; File.open(ENV["TEMPFILE"], "w") {|f| f.write yaml.to_yaml }'
+    fi
+
+    if [ "$APP_GEN" == 2 ]; then
+        ECR_LIST=$(cat $DOCKER_COMPOSE | grep image:)
+        while read -r line; do
+
+            SERVICE_NAME=$(echo $line | cut -d":" -f3 | cut -d"." -f1)
+            ECR=$(echo $line | cut -d":" -f2 | tr -d '[[:space:]]')
+            ECR_NAME=$(echo $ECR | cut -d"/" -f2)
+
+            # remove the build part of the convox.yml, using ruby so we can parse the yaml and add the path for the docker image.
+            ruby -e 'require "yaml"; yaml = YAML.load_file("convox.yml"); yaml["services"]["'$SERVICE_NAME'"].delete("build"); yaml["services"]["'$SERVICE_NAME'"]["image"] = "'$ECR:$SERVICE_NAME.latest'"; File.open("convox.yml", "w") {|f| f.write yaml.to_yaml }'
+        done <<< "$ECR_LIST"
+    fi
 }
 
 build_convox_release() {
-    convox build --file $TEMPFILE --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
-    #convox build --file $TEMPFILE --incremental --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
-}
+    if [ "$APP_GEN" == 1 ]; then
+        convox build --file $TEMPFILE --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
+        #convox build --file $TEMPFILE --incremental --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
+    fi
 
+    if [ "$APP_GEN" == 2 ]; then
+        convox build --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
+        #convox build --incremental --rack $RACK_NAME --app $APP_NAME --description "$GIT_DESCRIPTION"
+    fi
+}
 
 get_latest_release_id() {
     export RELEASE_ID=$(convox api get /apps/$APP_NAME/releases | jq -r 'sort_by(.created) | reverse[0] | .id')
@@ -240,7 +268,7 @@ main() {
         push_images_to_docker \
         "Pushing local builds to AWS ECR..."
 
-    strip_build_options
+    parse_build_options
 
     echo_with_feedback \
         build_convox_release \
